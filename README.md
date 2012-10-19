@@ -2,7 +2,10 @@ The CLI utility for generating a Cloud9 extension
 
 To use:
 
-`c9ext [name]`
+```
+npm install -g c9ext
+c9ext [name]
+```
 
 e.g.
 
