@@ -1,0 +1,4 @@
+*.log
+.c9revisions
+node_modules/
+plugins-client/

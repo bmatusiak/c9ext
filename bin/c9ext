@@ -1,0 +1,252 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var program = require('commander'),
+  mkdirp = require('mkdirp'),
+  pkg = require('../package.json'),
+  version = pkg.version,
+  os = require('os'),
+  fs = require('fs');
+
+// CLI
+
+program
+  .version(version)
+  .parse(process.argv);
+
+// Path
+var extname = program.args.shift();
+var path = 'plugins-client/ext.' + extname;
+
+// end-of-line code
+
+var eol = 'win32' == os.platform() ? '\r\n' : '\n';
+
+// Generate application
+
+(function createApplication(path) {
+  emptyDirectory(path, function(empty){
+    if (empty || program.force) {
+      createApplicationAt(path, extname);
+    } else {
+      program.confirm('destination is not empty, continue? ', function(ok){
+        if (ok) {
+          process.stdin.destroy();
+          createApplicationAt(path, extname);
+        } else {
+          abort('aborting');
+        }
+      });
+    }
+  });
+})(path);
+
+/**
+ * Create application at the given directory `path`.
+ *
+ * @param {String} path
+ */
+
+function createApplicationAt(path, extname) {
+  console.log();
+  process.on('exit', function(){
+    console.log();
+    console.log('   To see how to load this extension, visit:');
+    console.log('     https://developer.c9.io/start/load-your-extension');
+    console.log('   To learn how to build out this extension, visit the guides:');
+    console.log('     https://developer.c9.io/guides');
+  });
+
+  // package.json
+  var pkg = {
+    "name": "ext." + extname,
+    "version": "0.0.1",
+    "main": extname + "-ext.js",
+    "private": true,
+    "plugin": {
+      "provides": [
+        "ext." + extname
+      ],
+      "consumes": [
+        "client-plugins"
+      ]
+    }
+  };
+
+ /**
+  * Template primary JS file
+  */
+  var templatejs = [
+    '/**',
+    ' * Your extension for Cloud9 IDE!',
+    ' * ',
+    ' * Inserts a context menu item under the "Edit" menu, which, when',
+    ' * clicked, displays a simple window with a "Close" button.',
+    ' */',
+     
+    'define(function(require, exports, module) {',
+    ' ',
+    'var ext = require("core/ext");',
+    ' ',
+    'var menus = require("ext/menus/menus");',
+    'var commands = require("ext/commands/commands");',
+    'var markup = require("text!ext/' + extname + '/' + extname + '.xml");',
+    ' ',
+    'module.exports = ext.register("ext/' + extname + '/' + extname + '", {',
+    '    name     : "' + extname + '",',
+    '    dev      : "You",',
+    '    alone    : true,',
+    '    deps     : [],',
+    '    type     : ext.GENERAL,',
+    '    markup   : markup,',
+    ' ',
+    '    nodes : [],',
+    ' ',
+    '    init : function(){',
+    '        var _self = this;',
+    '        this.winExtensionTemplate = winExtensionTemplate;',
+    ' ',    
+    '        commands.addCommand({',
+    '            name: "sayhello",',
+    '            hint: "Say something",',
+    '            msg: "Popping window!",',
+    '            bindKey: {mac: "Shift-1", win: "Ctrl-1"},',
+    '            isAvailable : function() {',
+    '                return true;',
+    '            },',
+    '            exec: function() {',
+    '                _self.winExtensionTemplate.show();',
+    '            }',
+    '        });',
+    ' ',        
+    '        this.nodes.push(',
+    '            menus.addItemByPath("Edit/Extension Template", new apf.item({',
+    '                command : "sayhello"',
+    '            }), 5400)',
+    '        );',
+    '   },',
+    ' ',
+    '    hook : function(){',
+    '        ext.initExtension(this);',
+    '    },',
+    ' ',
+    '    enable : function(){',
+    '        this.nodes.each(function(item){',
+    '            item.enable();',
+    '        });',
+    '    },',
+    ' ',
+    '    disable : function(){',
+    '        this.nodes.each(function(item){',
+    '            item.disable();',
+    '        });',
+    '    },',
+    ' ',
+    '    destroy : function(){',
+    '        this.nodes.each(function(item){',
+    '            item.destroy(true, true);',
+    '        });',
+    '        this.nodes = [];',
+    '    },',
+    ' ',
+    '    closeExtensionTemplateWindow : function(){',
+    '        this.winExtensionTemplate.hide();',
+    '    }',
+    '});',
+    ' ',
+    '});'
+  ].join(eol);
+  
+  /**
+   * Template AML -- UI markup
+   */
+  var templatexml = [
+    '<a:application xmlns:a="http://ajax.org/2005/aml">',
+    '  <a:window',
+    '     id        = "winExtensionTemplate"',
+    '     title     = "Your Extension Window"',
+    '     center    = "true"',
+    '     modal     = "false"',
+    '     buttons   = "close"',
+    '     skin      = "bk-window"',
+    '     kbclose   = "true"',
+    '     class     = "relative"',
+    '     width     = "300">',
+    '       <a:vbox>',
+    '           <a:hbox padding="5" edge="10">',
+    '               Hello World!',
+    '           </a:hbox>',
+    '           <a:hbox pack="end" padding="5" edge="6 10 10">',
+    '               <a:button',
+    '                 caption = "Close"',
+    '                 skin    = "btn-default-css3"',
+    '                 onclick = "',
+    '                 require(\'ext/' + extname + '/' + extname + '\').closeExtensionTemplateWindow();"',
+    '                />',
+    '           </a:hbox>',
+    '       </a:vbox>',
+    '   </a:window>',
+    '</a:application>'
+  ].join(eol);
+
+  mkdir(path, function(){
+    write(path + '/' + extname + '.js', templatejs);
+    write(path + '/' + extname + '.xml', templatexml);
+    write(path + '/package.json', JSON.stringify(pkg, null, 2));
+  });
+}
+
+/**
+ * Check if the given directory `path` is empty.
+ *
+ * @param {String} path
+ * @param {Function} fn
+ */
+
+function emptyDirectory(path, fn) {
+  fs.readdir(path, function(err, files){
+    if (err && 'ENOENT' != err.code) throw err;
+    fn(!files || !files.length);
+  });
+}
+
+/**
+ * echo str > path.
+ *
+ * @param {String} path
+ * @param {String} str
+ */
+
+function write(path, str) {
+  fs.writeFile(path, str);
+  console.log('   \x1b[36mcreate\x1b[0m : ' + path);
+}
+
+/**
+ * Mkdir -p.
+ *
+ * @param {String} path
+ * @param {Function} fn
+ */
+
+function mkdir(path, fn) {
+  mkdirp(path, 0755, function(err){
+    if (err) throw err;
+    console.log('   \033[36mcreate\033[0m : ' + path);
+    fn && fn();
+  });
+}
+
+/**
+ * Exit with the given `str`.
+ *
+ * @param {String} str
+ */
+
+function abort(str) {
+  console.error(str);
+  process.exit(1);
+}
