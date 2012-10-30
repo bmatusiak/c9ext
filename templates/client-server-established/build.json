@@ -1,12 +1,11 @@
 {
-    "name": "Client-Server Extension",
-    "description": "Builds client and server extensions that communicate with each other",
+    "name": "Git Client",
+    "description": "Builds client extension that communicate with 'git' server-side extension",
     "author": "Matt Pardee <matt@c9.io>",
-    "base_dir" : "templates/server-client-comm/",
+    "base_dir" : "templates/client-server-established/",
     "prompt_vars": [],
     "scaffold_dirs" : [
-        "plugins-client/ext.<%- extension_name %>",
-        "plugins-server/cloud9.ide.<%- extension_name %>"
+        "plugins-client/ext.<%- extension_name %>"
     ],
     "build_files" : [
         {
@@ -18,16 +17,12 @@
             "output_file" : "plugins-client/ext.<%- extension_name %>/<%- extension_name %>.js"
         },
         {
-            "input_file" : "server_js.ejs",
-            "output_file" : "plugins-server/cloud9.ide.<%- extension_name %>/<%- extension_name %>.js"
+            "input_file" : "gitlogparser.ejs",
+            "output_file" : "plugins-client/ext.<%- extension_name %>/gitlogparser.js"
         },
         {
             "input_file" : "package_json.ejs",
             "output_file" : "plugins-client/ext.<%- extension_name %>/package.json"
-        },
-        {
-            "input_file" : "server_package_json.ejs",
-            "output_file" : "plugins-server/cloud9.ide.<%- extension_name %>/package.json"
         }
     ]
 }
