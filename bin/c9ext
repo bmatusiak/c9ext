@@ -20,11 +20,10 @@ var extTemplates = [];
 // Operation defaults to "add" right now
 // Should include "help" soon
 var operation = program.args.shift();
-
 // Generate extension
 (function createApplication() {
     console.log("\nChoose the extension template # to create:\n");
-    getTemplateChoices('templates', function(choices) {
+    getTemplateChoices(__dirname + '/../templates', function(choices) {
         program.choose(choices, function(i) {
             console.log('\n\033[36mbuilding\033[0m :', extTemplates[i].name, '\n');
 
@@ -81,7 +80,7 @@ function createApplicationWith(templateVars, extTemplate) {
 
     createScaffoldingDirs(scaffoldDirs);
 
-    var baseDir = extTemplate.base_dir;
+    var baseDir = __dirname + "/../" + extTemplate.base_dir;
     extTemplate.build_files.forEach(function(file_details) {
         var filePath = baseDir + file_details.input_file;
         var fileData = fs.readFileSync(filePath, "utf-8");
