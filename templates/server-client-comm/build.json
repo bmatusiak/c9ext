@@ -1,6 +1,6 @@
 {
-    "name": "Client-Server Extension",
-    "description": "Builds client and server extensions that communicate with each other",
+    "name": "Basic client-server interaction",
+    "description": "Creates client and server extensions that communicate with each other",
     "author": "Matt Pardee <matt@c9.io>",
     "base_dir" : "templates/server-client-comm/",
     "prompt_vars": [],

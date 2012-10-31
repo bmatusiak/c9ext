@@ -10,43 +10,45 @@ var ext = require("core/ext");
 
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
+var panels = require("ext/panels/panels");
 var markup = require("text!./<%- extension_name %>.xml");
 
 module.exports = ext.register("ext/<%- extension_name %>/<%- extension_name %>", {
-    name     : "<%- extension_name %>",
-    dev      : "You",
-    alone    : true,
-    deps     : [],
-    type     : ext.GENERAL,
-    markup   : markup,
+    name         : "<%- extension_name %>",
+    dev          : "You",
+    alone        : true,
+    deps         : [],
+    type         : ext.GENERAL,
+    markup       : markup,
+    defaultWidth : 130,
 
     nodes : [],
 
     init : function(){
-        var _self = this;
+        this.panel = window["myPanel<%- extension_name %>"];
+        this.nodes.push(this.panel);
+    },
 
-        commands.addCommand({
-            name: "sayhello",
-            hint: "Say something",
-            msg: "Popping window!",
-            bindKey: {mac: "Shift-1", win: "Ctrl-1"},
-            isAvailable : function() {
-                return true;
-            },
-            exec: function() {
-                winExtensionTemplate.show();
-            }
-        });
+    show : function(e) {
+        if (!this.panel || !this.panel.visible) {
+            panels.activate(this);
+            this.enable();
+        }
+        else {
+            panels.deactivate(null, true);
+        }
 
-        this.nodes.push(
-            menus.addItemByPath("Edit/Extension Template", new apf.item({
-                command : "sayhello"
-            }), 5400)
-        );
+        return false;
     },
 
     hook : function(){
-        ext.initExtension(this);
+        this.markupInsertionPoint = colLeft;
+
+        panels.register(this, {
+            position : 6000,
+            caption: "My Panel",
+            "class": "myPanel<%- extension_name %>_class"
+        });
     },
 
     enable : function(){
@@ -66,10 +68,6 @@ module.exports = ext.register("ext/<%- extension_name %>/<%- extension_name %>",
             item.destroy(true, true);
         });
         this.nodes = [];
-    },
-
-    closeExtensionTemplateWindow : function(){
-        winExtensionTemplate.hide();
     }
 });
 

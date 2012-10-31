@@ -52,7 +52,7 @@ module.exports = ext.register("ext/<%- extension_name %>/<%- extension_name %>",
 
         var data = {
             command: cmd,
-            argv: ["git", "log", "-10", "--format=raw"],
+            argv: ["git", "log", "--format=raw"],
             extra: { type: "gitlog" },
             requireshandling: !commands.commands.git,
             cwd : c9console.getCwd()

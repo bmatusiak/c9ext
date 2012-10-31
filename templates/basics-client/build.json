@@ -1,6 +1,6 @@
 {
-    "name": "Client Extension",
-    "description": "Adds an item under the 'Edit' menu. When clicked, it invokes a dialog.",
+    "name": "Basic client extension",
+    "description": "Adds an item under the 'Edit' menu. When clicked, it invokes a dialog",
     "author": "Matt Pardee <matt@c9.io>",
     "base_dir" : "templates/basics-client/",
     "prompt_vars": [],

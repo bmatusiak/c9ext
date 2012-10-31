@@ -1,8 +1,8 @@
 {
-    "name": "Git log client",
-    "description": "A client extension that communicates with the 'git' server-side extension",
+    "name": "Client extension with project bar panel",
+    "description": "Adds a panel section to the project bar on the left side of the IDE",
     "author": "Matt Pardee <matt@c9.io>",
-    "base_dir" : "templates/client-server-established/",
+    "base_dir" : "templates/basics-client-panel/",
     "prompt_vars": [],
     "scaffold_dirs" : [
         "plugins-client/ext.<%- extension_name %>"
@@ -15,10 +15,6 @@
         {
             "input_file" : "client_js.ejs",
             "output_file" : "plugins-client/ext.<%- extension_name %>/<%- extension_name %>.js"
-        },
-        {
-            "input_file" : "gitlogparser.ejs",
-            "output_file" : "plugins-client/ext.<%- extension_name %>/gitlogparser.js"
         },
         {
             "input_file" : "package_json.ejs",

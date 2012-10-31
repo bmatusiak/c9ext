@@ -23,14 +23,14 @@ var operation = program.args.shift();
 
 // Generate extension
 (function createApplication() {
-    console.log("\nchoose the type of extension to create:\n");
+    console.log("\nChoose the extension template # to create:\n");
     getTemplateChoices('templates', function(choices) {
         program.choose(choices, function(i) {
             console.log('\n\033[36mbuilding\033[0m :', extTemplates[i].name, '\n');
 
             extTemplates[i].prompt_vars.unshift({
                 "var_name" : "extension_name",
-                "var_prompt" : "Extension Name"
+                "var_prompt" : "Extension Name: "
             });
 
             promptMulti(extTemplates[i].prompt_vars, function(templateVars) {
@@ -92,19 +92,6 @@ function createApplicationWith(templateVars, extTemplate) {
     });
 
     process.stdin.destroy();
-    /*var pkgTemplate = fs.readFileSync("templates/basics-client/package_json.ejs", "utf-8");
-    var renderedPkg = ejs.render(pkgTemplate, templateVars);
-
-    var jsTemplate = fs.readFileSync("templates/basics-client/client_js.ejs", "utf-8");
-    var renderedJS = ejs.render(jsTemplate, templateVars);
-    var xmlTemplate = fs.readFileSync("templates/basics-client/client_aml.ejs", "utf-8");
-    var renderedAml = ejs.render(xmlTemplate, templateVars);
-
-    mkdir(path, function() {
-        write(path + '/' + templateVars.extension_name + '.js', renderedJS);
-        write(path + '/' + templateVars.extension_name + '.xml', renderedAml);
-        write(path + '/package.json', renderedPkg);
-    });*/
 }
 
 /**
@@ -135,7 +122,7 @@ function getTemplateChoices(path, fn) {
         for (var f in files) {
             var buildFile = JSON.parse(fs.readFileSync(path + "/" + files[f] + "/build.json"));
             extTemplates.push(buildFile);
-            arrBuilds.push(buildFile.name + " - " + buildFile.description);
+            arrBuilds.push("\033[36m" + buildFile.name + "\033[0m\n     " + buildFile.description);
         }
 
         fn(arrBuilds);
@@ -206,13 +193,19 @@ function mkdirsync(path) {
  * @param {Function} fn
  */
 function promptMulti(prompts, fn) {
-    var responseObj = {};
-    prompts.forEach(function(item, i) {
-        program.prompt(item.var_prompt + ": ", function(input){
-            responseObj[item.var_name] = input;
-            if (i === (prompts.length - 1))
-                return fn && fn(responseObj);
+    var normalizedPrompts = [];
+    prompts.forEach(function(item) {
+        normalizedPrompts.push(item.var_prompt);
+    });
+    
+    program.prompt(normalizedPrompts, function(obj) {
+        var responseObj = {};
+        var objKeys = Object.keys(obj);
+        objKeys.forEach(function(i) {
+            responseObj[prompts[i].var_name] = obj[i];
         });
+
+        return fn && fn(responseObj);
     });
 }
 
