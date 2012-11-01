@@ -33,6 +33,7 @@ var operation = program.args.shift();
             });
 
             promptMulti(extTemplates[i].prompt_vars, function(templateVars) {
+                templateVars.extension_name = templateVars.extension_name.toLowerCase();
                 var noFiles = extTemplates[i].scaffold_dirs.every(function(dirPath) {
                     dirPath = ejs.render(dirPath, templateVars);
                     return (emptyDirectorySync(dirPath) === true);

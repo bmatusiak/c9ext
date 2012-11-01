@@ -33,7 +33,7 @@ module.exports = ext.register("ext/<%- extension_name %>/<%- extension_name %>",
     
     createNewFileiFrame : function(){
         editors.gotoDocument({
-            path: "iFrame" + ++this.counter + ".#!uniqueextension<%- extension_name %>",
+            path: "iFrame" + ++this.counter + this.fileExtensions[0],
             type: "nofile"
         });
     },
