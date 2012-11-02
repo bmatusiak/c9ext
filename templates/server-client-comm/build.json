@@ -22,7 +22,7 @@
             "output_file" : "plugins-server/cloud9.ide.<%- extension_name %>/<%- extension_name %>.js"
         },
         {
-            "input_file" : "package_json.ejs",
+            "input_file" : "client_package_json.ejs",
             "output_file" : "plugins-client/ext.<%- extension_name %>/package.json"
         },
         {
