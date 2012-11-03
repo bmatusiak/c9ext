@@ -6,7 +6,8 @@
     "prompt_vars": [
         {
             "var_name" : "iframe_url",
-            "var_prompt" : "iFrame URL (e.g. http://www.c9.io): "
+            "var_prompt" : "iFrame URL (e.g. http://www.c9.io): ",
+            "var_default" : "http://www.c9.io/"
         }
     ],
     "scaffold_dirs" : [
