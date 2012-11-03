@@ -202,7 +202,10 @@ function promptMulti(prompts, fn) {
         var responseObj = {};
         var objKeys = Object.keys(obj);
         objKeys.forEach(function(i) {
-            responseObj[prompts[i].var_name] = obj[i];
+            if(obj[i] !== "")
+                responseObj[prompts[i].var_name] = obj[i];
+            else if(prompts[i].var_default)
+                responseObj[prompts[i].var_name] = prompts[i].var_default;
         });
 
         return fn && fn(responseObj);
