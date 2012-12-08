@@ -71,7 +71,7 @@ function createApplicationWith(templateVars, extTemplate) {
         console.log('   To see how to load this extension, visit:');
         console.log('     http://developer.c9.io/start/load-your-extension');
         console.log('   To learn how to build out this extension, visit the guides:');
-        console.log('     http://developer.c9.io/guides');
+        console.log('     http://developer.c9.io/extension-development-resources');
     });
 
     var scaffoldDirs = [];
